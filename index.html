@@ -33,40 +33,40 @@
   header {
     background: var(--bg-header);
     border-bottom: 1px solid var(--border);
-    padding: 12px 24px;
+    padding: 10px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-  .logo {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    display: flex;
-    align-items: center;
+    flex-wrap: wrap; /* Erlaubt Umbruch auf kleinen Bildschirmen */
     gap: 10px;
   }
-  .logo svg { width: 24px; height: 24px; fill: var(--accent); }
+  .logo {
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo svg { width: 20px; height: 20px; fill: var(--accent); }
   
-  .top-actions { display: flex; gap: 10px; }
+  .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn {
-    padding: 8px 16px;
+    padding: 6px 12px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     cursor: pointer;
     border: none;
     transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
   }
   .btn-primary { background: var(--accent); color: white; }
   .btn-primary:hover { background: var(--accent-hover); }
   .btn-secondary { background: #2a2e37; color: var(--text-main); border: 1px solid var(--border); }
-  .btn-secondary:hover { background: #353a45; }
 
-  /* --- Main Split Layout --- */
+  /* --- Main Layout --- */
   main {
     display: flex;
     flex: 1;
@@ -77,47 +77,42 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    min-width: 0; /* Verhindert Overflow */
+    min-width: 0;
+    min-height: 0; /* WICHTIG für mobile */
   }
   .pane-editor { border-right: 1px solid var(--border); }
   
   .pane-header {
     background: var(--bg-panel);
-    padding: 10px 16px;
+    padding: 8px 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--border);
   }
   .pane-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
     color: var(--text-muted);
   }
 
   /* Icons Toolbar */
-  .toolbar { display: flex; gap: 4px; }
+  .toolbar { display: flex; gap: 2px; }
   .icon-btn {
     background: transparent;
     border: 1px solid transparent;
     color: var(--text-muted);
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s;
   }
-  .icon-btn:hover {
-    background: #2a2e37;
-    color: var(--text-main);
-    border-color: var(--border);
-  }
-  .icon-btn svg { width: 16px; height: 16px; fill: currentColor; }
+  .icon-btn:hover { background: #2a2e37; color: var(--text-main); }
+  .icon-btn svg { width: 14px; height: 14px; fill: currentColor; }
 
   /* --- Editor Bereich --- */
   .editor-container {
@@ -127,12 +122,12 @@
     overflow: hidden;
   }
   .line-numbers {
-    padding: 16px 12px;
+    padding: 12px 8px;
     background: #13151a;
     color: #4a5261;
-    font-family: 'Fira Code', 'Consolas', monospace;
-    font-size: 14px;
-    line-height: 1.6;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.5;
     text-align: right;
     user-select: none;
     border-right: 1px solid var(--border);
@@ -143,12 +138,12 @@
     background: transparent;
     border: none;
     color: #e2e4e9;
-    font-family: 'Fira Code', 'Consolas', monospace;
-    font-size: 14px;
-    padding: 16px;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+    padding: 12px;
     resize: none;
     outline: none;
-    line-height: 1.6;
+    line-height: 1.5;
     white-space: pre;
     overflow: auto;
   }
@@ -166,47 +161,65 @@
   .status-bar {
     background: var(--bg-header);
     border-top: 1px solid var(--border);
-    padding: 8px 24px;
+    padding: 6px 16px;
     display: flex;
-    gap: 24px;
+    gap: 16px;
     align-items: center;
+    flex-wrap: wrap;
   }
   .switch-label {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
+    gap: 6px;
+    font-size: 11px;
     color: var(--text-muted);
     cursor: pointer;
-    user-select: none;
   }
-  /* Toggle Switch */
-  .toggle { position: relative; display: inline-block; width: 34px; height: 18px; }
+  .toggle { position: relative; display: inline-block; width: 30px; height: 16px; }
   .toggle input { opacity: 0; width: 0; height: 0; }
   .slider {
     position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
     background-color: #3b414d; transition: .3s; border-radius: 34px;
   }
   .slider:before {
-    position: absolute; content: ""; height: 14px; width: 14px;
+    position: absolute; content: ""; height: 12px; width: 12px;
     left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%;
   }
   input:checked + .slider { background-color: var(--accent); }
-  input:checked + .slider:before { transform: translateX(16px); }
+  input:checked + .slider:before { transform: translateX(14px); }
 
-  /* Toast Benachrichtigung */
+  /* Toast */
   .toast {
     position: fixed; bottom: 50px; left: 50%;
     transform: translateX(-50%) translateY(20px);
     background: var(--success); color: #fff;
-    padding: 10px 20px; border-radius: 8px;
-    font-size: 13px; font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    opacity: 0; transition: all 0.3s ease;
-    pointer-events: none;
-    z-index: 1000;
+    padding: 8px 16px; border-radius: 6px;
+    font-size: 12px; font-weight: 500;
+    opacity: 0; transition: all 0.3s;
+    pointer-events: none; z-index: 1000;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* =========================================
+     MOBILE ANSICHT (Bildschirm < 768px)
+     Hier werden Editor und Vorschau untereinander gestapelt
+     ========================================= */
+  @media (max-width: 768px) {
+    main {
+      flex-direction: column; /* Untereinander statt nebeneinander */
+    }
+    .pane {
+      flex: none; /* Verhindert, dass sich die Boxen überlappen */
+      height: 50vh; /* Jede Box nimmt 50% der Höhe ein */
+    }
+    .pane-editor {
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .pane-header {
+      padding: 6px 10px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -229,15 +242,12 @@
     <div class="pane-header">
       <div class="pane-title">HTML Editor</div>
       <div class="toolbar">
-        <!-- Format -->
         <button class="icon-btn" id="btnFormat" title="Code formatieren">
           <svg viewBox="0 0 24 24"><path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z"/></svg>
         </button>
-        <!-- Copy -->
         <button class="icon-btn" id="btnCopy" title="Code kopieren">
           <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
         </button>
-        <!-- Clear -->
         <button class="icon-btn" id="btnClear" title="Alles löschen">
           <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
         </button>
@@ -295,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const toast = document.getElementById('toast');
   let debounceTimer;
 
-  // Start-Code (als Array, um Formatierungsfehler zu vermeiden)
+  // WICHTIG: Das HTML ist hier mit \x3C (für <) escaped, damit GitHub Pages es nicht zerstört!
   const defaultCode = [
     '<!DOCTYPE html>',
     '<html>',
@@ -315,7 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
     '</html>'
   ].join('\n');
 
-  // Hilfsfunktionen
   function showToast(msg) {
     toast.textContent = msg;
     toast.classList.add('show');
@@ -334,7 +343,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLineNumbers();
   };
 
-  // 1. Formatieren
   function formatHTML() {
     let html = editor.value;
     let formatted = '';
@@ -350,7 +358,6 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('✨ Code formatiert');
   }
 
-  // 2. Kopieren
   async function copyCode() {
     try {
       await navigator.clipboard.writeText(editor.value);
@@ -362,7 +369,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 3. Löschen
   function clearCode() {
     if(editor.value.trim() !== "" && confirm('Alles löschen?')) {
       editor.value = '';
@@ -371,7 +377,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 4. In neuem Tab öffnen
   window.openInNewTab = function() {
     const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -379,7 +384,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => URL.revokeObjectURL(url), 5000);
   };
 
-  // 5. Upload / Import
   document.getElementById('btnUpload').addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', (event) => {
     const file = event.target.files[0];
@@ -394,7 +398,6 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInput.value = '';
   });
 
-  // 6. Download / Export
   document.getElementById('btnDownload').addEventListener('click', () => {
     if(!editor.value.trim()) return showToast('⚠️ Nichts zu exportieren');
     const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
@@ -409,12 +412,10 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('⬇️ Exportiert');
   });
 
-  // Events verknüpfen
   document.getElementById('btnFormat').addEventListener('click', formatHTML);
   document.getElementById('btnCopy').addEventListener('click', copyCode);
   document.getElementById('btnClear').addEventListener('click', clearCode);
 
-  // Live-Editor Events
   editor.addEventListener('input', () => {
     updateLineNumbers();
     if (autoUpdate.checked) {
@@ -427,12 +428,10 @@ document.addEventListener('DOMContentLoaded', () => {
     lineNumbers.scrollTop = editor.scrollTop;
   });
 
-  // Toggle Zeilennummern
   showLines.addEventListener('change', (e) => {
     lineNumbers.style.display = e.target.checked ? 'block' : 'none';
   });
 
-  // Initial laden
   editor.value = defaultCode;
   updatePreview();
 });
