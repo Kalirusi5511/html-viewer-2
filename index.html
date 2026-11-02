@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live HTML Playground</title>
+<style>
+  :root {
+    --bg-body: #0f1115;
+    --bg-panel: #1e2128;
+    --bg-header: #16181d;
+    --border: #2c313c;
+    --text-main: #d4d6db;
+    --text-muted: #7a8290;
+    --accent: #6366f1;
+    --accent-hover: #4f46e5;
+    --success: #10b981;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* --- Top Navigation --- */
+  header {
+    background: var(--bg-header);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo svg { width: 24px; height: 24px; fill: var(--accent); }
+  
+  .top-actions { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-secondary { background: #2a2e37; color: var(--text-main); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: #353a45; }
+
+  /* --- Main Split Layout --- */
+  main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .pane {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0; /* Verhindert Overflow */
+  }
+  .pane-editor { border-right: 1px solid var(--border); }
+  
+  .pane-header {
+    background: var(--bg-panel);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .pane-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  /* Icons Toolbar */
+  .toolbar { display: flex; gap: 4px; }
+  .icon-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .icon-btn:hover {
+    background: #2a2e37;
+    color: var(--text-main);
+    border-color: var(--border);
+  }
+  .icon-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+  /* --- Editor Bereich --- */
+  .editor-container {
+    display: flex;
+    flex: 1;
+    background: var(--bg-body);
+    overflow: hidden;
+  }
+  .line-numbers {
+    padding: 16px 12px;
+    background: #13151a;
+    color: #4a5261;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: right;
+    user-select: none;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+  textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #e2e4e9;
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 14px;
+    padding: 16px;
+    resize: none;
+    outline: none;
+    line-height: 1.6;
+    white-space: pre;
+    overflow: auto;
+  }
+
+  /* --- Preview Bereich --- */
+  iframe {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #ffffff;
+  }
+
+  /* --- Bottom Bar (Switches) --- */
+  .status-bar {
+    background: var(--bg-header);
+    border-top: 1px solid var(--border);
+    padding: 8px 24px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+  .switch-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  /* Toggle Switch */
+  .toggle { position: relative; display: inline-block; width: 34px; height: 18px; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #3b414d; transition: .3s; border-radius: 34px;
+  }
+  .slider:before {
+    position: absolute; content: ""; height: 14px; width: 14px;
+    left: 2px; bottom: 2px; background-color: white; transition: .3s; border-radius: 50%;
+  }
+  input:checked + .slider { background-color: var(--accent); }
+  input:checked + .slider:before { transform: translateX(16px); }
+
+  /* Toast Benachrichtigung */
+  .toast {
+    position: fixed; bottom: 50px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--success); color: #fff;
+    padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    opacity: 0; transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+    Playground
+  </div>
+  <div class="top-actions">
+    <button class="btn btn-secondary" id="btnUpload">📁 Importieren</button>
+    <button class="btn btn-secondary" id="btnDownload">⬇️ Exportieren</button>
+    <button class="btn btn-primary" onclick="updatePreview()">▶ Ausführen</button>
+  </div>
+</header>
+
+<main>
+  <!-- Linke Seite: Editor -->
+  <div class="pane pane-editor">
+    <div class="pane-header">
+      <div class="pane-title">HTML Editor</div>
+      <div class="toolbar">
+        <!-- Format -->
+        <button class="icon-btn" id="btnFormat" title="Code formatieren">
+          <svg viewBox="0 0 24 24"><path d="M3 21h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18v-2H3v2zm0-4h18V7H3v2zm0-6v2h18V3H3z"/></svg>
+        </button>
+        <!-- Copy -->
+        <button class="icon-btn" id="btnCopy" title="Code kopieren">
+          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+        </button>
+        <!-- Clear -->
+        <button class="icon-btn" id="btnClear" title="Alles löschen">
+          <svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </div>
+    </div>
+    
+    <div class="editor-container">
+      <div class="line-numbers" id="lines">1</div>
+      <textarea id="editor" spellcheck="false" placeholder="Schreibe hier deinen HTML-Code..."></textarea>
+    </div>
+  </div>
+
+  <!-- Rechte Seite: Vorschau -->
+  <div class="pane">
+    <div class="pane-header">
+      <div class="pane-title">Live Vorschau</div>
+      <div class="toolbar">
+        <button class="icon-btn" onclick="openInNewTab()" title="In neuem Tab öffnen">
+          <svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+        </button>
+      </div>
+    </div>
+    <iframe id="previewFrame" title="Live Vorschau"></iframe>
+  </div>
+</main>
+
+<div class="status-bar">
+  <label class="switch-label">
+    <div class="toggle">
+      <input type="checkbox" id="autoUpdate" checked>
+      <span class="slider"></span>
+    </div>
+    Auto-Update
+  </label>
+  <label class="switch-label">
+    <div class="toggle">
+      <input type="checkbox" id="showLines" checked>
+      <span class="slider"></span>
+    </div>
+    Zeilennummern
+  </label>
+</div>
+
+<input type="file" id="fileInput" accept=".html,.htm,.txt" hidden>
+<div class="toast" id="toast">Gespeichert!</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const editor = document.getElementById('editor');
+  const previewFrame = document.getElementById('previewFrame');
+  const autoUpdate = document.getElementById('autoUpdate');
+  const showLines = document.getElementById('showLines');
+  const lineNumbers = document.getElementById('lines');
+  const fileInput = document.getElementById('fileInput');
+  const toast = document.getElementById('toast');
+  let debounceTimer;
+
+  // Start-Code (als Array, um Formatierungsfehler zu vermeiden)
+  const defaultCode = [
+    '<!DOCTYPE html>',
+    '<html>',
+    '<head>',
+    '  <style>',
+    '    body { font-family: system-ui, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f8fafc; color: #1e293b; }',
+    '    .card { text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }',
+    '    h1 { color: #6366f1; margin-bottom: 8px; }',
+    '  </style>',
+    '</head>',
+    '<body>',
+    '  <div class="card">',
+    '    <h1>Hallo Playground!</h1>',
+    '    <p>Bearbeite den Code links und sieh die Magie rechts.</p>',
+    '  </div>',
+    '</body>',
+    '</html>'
+  ].join('\n');
+
+  // Hilfsfunktionen
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  function updateLineNumbers() {
+    const lines = editor.value.split('\n').length;
+    lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
+    lineNumbers.scrollTop = editor.scrollTop;
+  }
+
+  window.updatePreview = function() {
+    const code = editor.value;
+    previewFrame.srcdoc = code || '<div style="display:flex;justify-content:center;align-items:center;height:100%;color:#94a3b8;font-family:sans-serif;">Kein Code vorhanden</div>';
+    updateLineNumbers();
+  };
+
+  // 1. Formatieren
+  function formatHTML() {
+    let html = editor.value;
+    let formatted = '';
+    let indent = 0;
+    html.split(/>\s*</).forEach(function(node) {
+      if (node.match(/^\/\w/)) indent--;
+      formatted += '  '.repeat(Math.max(indent, 0)) + '<' + node + '>\n';
+      if (node.match(/^[^\/]/) && !node.match(/\/$/) && !node.match(/^(input|img|br|hr|meta|link)/)) indent++;
+    });
+    formatted = formatted.replace(/^</, '').replace(/>\n$/, '>');
+    editor.value = formatted.trim();
+    updatePreview();
+    showToast('✨ Code formatiert');
+  }
+
+  // 2. Kopieren
+  async function copyCode() {
+    try {
+      await navigator.clipboard.writeText(editor.value);
+      showToast('📋 Kopiert');
+    } catch (err) {
+      editor.select();
+      document.execCommand('copy');
+      showToast('📋 Kopiert (Fallback)');
+    }
+  }
+
+  // 3. Löschen
+  function clearCode() {
+    if(editor.value.trim() !== "" && confirm('Alles löschen?')) {
+      editor.value = '';
+      updatePreview();
+      showToast('🗑️ Geleert');
+    }
+  }
+
+  // 4. In neuem Tab öffnen
+  window.openInNewTab = function() {
+    const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  };
+
+  // 5. Upload / Import
+  document.getElementById('btnUpload').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      editor.value = e.target.result;
+      updatePreview();
+      showToast('📂 Importiert');
+    };
+    reader.readAsText(file);
+    fileInput.value = '';
+  });
+
+  // 6. Download / Export
+  document.getElementById('btnDownload').addEventListener('click', () => {
+    if(!editor.value.trim()) return showToast('⚠️ Nichts zu exportieren');
+    const blob = new Blob([editor.value], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'meine-seite.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('⬇️ Exportiert');
+  });
+
+  // Events verknüpfen
+  document.getElementById('btnFormat').addEventListener('click', formatHTML);
+  document.getElementById('btnCopy').addEventListener('click', copyCode);
+  document.getElementById('btnClear').addEventListener('click', clearCode);
+
+  // Live-Editor Events
+  editor.addEventListener('input', () => {
+    updateLineNumbers();
+    if (autoUpdate.checked) {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(updatePreview, 600);
+    }
+  });
+
+  editor.addEventListener('scroll', () => {
+    lineNumbers.scrollTop = editor.scrollTop;
+  });
+
+  // Toggle Zeilennummern
+  showLines.addEventListener('change', (e) => {
+    lineNumbers.style.display = e.target.checked ? 'block' : 'none';
+  });
+
+  // Initial laden
+  editor.value = defaultCode;
+  updatePreview();
+});
+</script>
+</body>
+</html>
